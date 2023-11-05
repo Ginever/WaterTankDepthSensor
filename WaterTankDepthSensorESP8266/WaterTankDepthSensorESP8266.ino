@@ -44,6 +44,7 @@ void setup() {
   delay(1000);
 
   // Connect to WiFi
+  Serial.println();
   Serial.print("Connecting to: ");
   Serial.println(_SSID);
   WiFi.begin(_SSID, _PASSWORD);
@@ -65,42 +66,12 @@ void setup() {
 
   
   timeClient.begin();
-  timeClient.setTimeOffset(39600);
+  timeClient.setTimeOffset(0);
   Serial.println("Time Client Connected");
 
 //================================================================//
 //================================================================//
 
-//  // Examples of setting String, integer and float values.
-//  firebase.setString("Example/setString", "It's Working");
-//  firebase.setInt("Example/setInt", 123);
-//  firebase.setFloat("Example/setFloat", 45.32);
-//
-//  // Examples of pushing String, integer and float values.
-//  firebase.pushString("push", "Hello");
-//  firebase.pushInt("push", 789);
-//  firebase.pushFloat("push", 89.54);
-//
-//  // Example of getting a String.
-//  String data1 = firebase.getString("Example/setString");
-//  Serial.print("Received String:\t");
-//  Serial.println(data1);
-//
-//  // Example of getting an int.
-//  int data2 = firebase.getInt("Example/setInt");
-//  Serial.print("Received Int:\t\t");
-//  Serial.println(data2);
-//
-//  // Example of getting a float.
-//  float data3 = firebase.getFloat("Example/setFloat");
-//  Serial.print("Received Float:\t\t");
-//  Serial.println(data3);
-//
-//  // Example of data deletion.
-//  firebase.deleteData("Example");
-}
-
-void loop() {
   timeClient.update();
 
   
@@ -119,15 +90,23 @@ void loop() {
   duration = pulseIn(echoPin, HIGH);
   
   // Calculate the distance:
-  distance = duration*0.034/2;
+  distance = duration/58;
+
+  //Turn off the sensor
+  digitalWrite(power, LOW);
   
   // Print the distance on the Serial Monitor (Ctrl+Shift+M):
   Serial.print(timeClient.getEpochTime());
   Serial.print(": Distance = ");
   Serial.print(distance);
   Serial.println(" cm");
-  Serial.println("tank_depth/" + timeClient.getFormattedTime());
-  firebase.setInt("tank_depth/" + timeClient.getFormattedTime() , distance);
-  
-  delay(2000);
+  //Serial.println("tank_depth/" + String(timeClient.getEpochTime()));
+  firebase.setInt("tank_depth/" + String(timeClient.getEpochTime()) , distance);
+
+  Serial.println("Going to sleep for 5 secounds");
+  ESP.deepSleep(5e6);
+}
+
+void loop() {
+//Do nothing
 }
